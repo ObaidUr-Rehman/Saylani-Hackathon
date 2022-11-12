@@ -18,15 +18,7 @@ function NavBar() {
           </Link>
 
           <ul className={click ? "nav-menu active" : "nav-menu"}>
-            <li className="nav-item">
-              <Link
-                to="/"
-                className="nav-links"
-                onClick={handleClick}
-              >
-                Students
-              </Link>
-            </li>
+            
             <li className="nav-item">
               <Link
                 to="/class"
@@ -34,7 +26,7 @@ function NavBar() {
                 className="nav-links"
                 onClick={handleClick}
               >
-                Classes
+                Attendance
               </Link>
             </li>
             <li className="nav-item">
