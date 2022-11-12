@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect} from 'react'
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
@@ -6,7 +6,16 @@ import TextField from '@mui/material/TextField';
 
 
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+
+import { 
+  getFirestore, collection,
+  addDoc, getDocs, doc,
+  onSnapshot, query, serverTimestamp,
+  orderBy, deleteDoc, updateDoc
+
+} from "firebase/firestore";
+
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCqNpZiGhh3lqNOX6kYbYfmLTGJRjIlkLg",
@@ -22,6 +31,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+
+
 
 const style = {
   position: 'absolute',
@@ -47,9 +58,81 @@ const Student=()=>{
 
 
 
+    const [std, setstd] = useState([]);
 
-    const Addstd=()=>{
-      
+
+    useEffect(() => {
+
+
+        const getData = async () => {
+          const querySnapshot = await getDocs(collection(db, "students"));
+    
+          querySnapshot.forEach((doc) => {
+            console.log(`${doc.id} => `, doc.data());
+    
+            setstd((prev) => {
+              let newArray = [...prev, doc.data()];
+              return newArray
+            });
+    
+          });
+        }
+        // getData();
+    
+        let unsubscribe = null;
+        const getRealtimeData = async () => {
+    
+          const q = query(collection(db, "students"));
+    
+          unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const stu = [];
+    
+            querySnapshot.forEach((doc) => {
+              // posts.unshift(doc.data());
+              // posts.push(doc.data());
+    
+              stu.push({ id: doc.id, ...doc.data() });
+    
+            });
+    
+            setstd(stu);
+            console.log("students: ", stu);
+          });
+    
+        }
+        getRealtimeData();
+    
+        return () => {
+          console.log("Cleanup function");
+          unsubscribe();
+        }
+    
+      }, [])
+
+
+
+
+
+
+
+
+
+
+    const Addstd = async () => {
+      console.log("okay");
+      try {
+        const docRef = await addDoc(collection(db, "students"), {
+          stdname:studname,
+          fathername:fathname,
+          CNIC:cnic,
+          Contact:contact,
+          RollNo:rollno,
+          BatchNo:batch
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
 
 
@@ -66,6 +149,9 @@ const Student=()=>{
     <div>
       {/* <Button style={{textAlign:"Center"}} </Button> */}
       <Button style={{textAlign:"center"}} variant="contained"onClick={handleOpen}>Register Student</Button>
+    
+      
+  
       <Modal
         open={open}
         onClose={handleClose}
@@ -93,10 +179,36 @@ const Student=()=>{
           setbatch(e.target.value)
         }}style={{margin:"10px"}} id="outlined-basic" label="Batch" variant="outlined" placeholder= 'Enter Batch No'  />
 
-        <Button onClick={Addstd} style={{textAlign:"center"}} variant="contained">Add Student</Button>        
+        <Button onClick={()=>  {Addstd() 
+          handleClose()
+          }} style={{textAlign:"center"}} variant="contained" >Add Student</Button>        
 
         </Box>
       </Modal>
+
+
+
+      <div className='mydiv'>
+
+{
+    std.map((ele,i)=>{
+        return(
+          <div className="myCard">
+          <div className="card" style={{width: "18rem"}} key={i}>
+          <div className="card-body">
+            <h5 className="card-title">{ele.stdname}</h5>
+            <p className="card-text">{ele.fathername}</p>
+            <p className="card-text">{ele.contact}</p>
+            <p className="card-text">{ele.RollNo}</p>
+            <p className="card-text">{ele.BatchNo}</p>
+          </div>
+        </div>
+        </div>
+      )
+  })
+}
+</div>
+
     </div>
   );
 }
