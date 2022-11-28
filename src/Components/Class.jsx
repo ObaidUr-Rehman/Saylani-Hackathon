@@ -3,10 +3,6 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-
-
-
-
 import { initializeApp } from "firebase/app";
 
 import { 
@@ -16,8 +12,6 @@ import {
   orderBy, deleteDoc, updateDoc
 
 } from "firebase/firestore";
-
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyCqNpZiGhh3lqNOX6kYbYfmLTGJRjIlkLg",
@@ -33,11 +27,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-
-
-
-
-
 
 
 const style = {
